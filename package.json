@@ -25,6 +25,7 @@
     "@upstash/redis": "^1.38.1",
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
+    "ai": "^7.0.48",
     "axios": "^1.19.0",
     "better-auth": "^1.6.25",
     "better-sqlite3": "^13.0.2",
