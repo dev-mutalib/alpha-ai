@@ -11,6 +11,7 @@ import {
   Settings2,
   Sparkles,
 } from 'lucide-react';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 type ChatGroup = {
   label: string;
@@ -37,14 +38,16 @@ export interface SidebarProps {
 export function Sidebar({ collapsed, onToggle, onNewChat }: SidebarProps) {
   return (
     <>
-      {!collapsed && <div
-        aria-hidden="true"
-        className="fixed inset-0 z-30 bg-foreground/20 backdrop-blur-[2px] md:hidden"
-      />}
+      {!collapsed && (
+        <div
+          aria-hidden="true"
+          className="fixed inset-0 z-30 bg-foreground/20 backdrop-blur-[2px] md:hidden"
+        />
+      )}
       <aside
-        className={`group/sidebar fixed inset-y-0 left-0 z-40 flex w-[284px] shrink-0 flex-col border-r border-border bg-sidebar transition-transform duration-300 ease-out md:relative md:z-auto md:translate-x-0 ${collapsed ? '-translate-x-full md:w-[76px]' : 'translate-x-0'}`}
+        className={`group/sidebar fixed inset-y-0 left-0 z-40 flex w-71 shrink-0 flex-col border-r border-border bg-sidebar transition-transform duration-300 ease-out md:relative md:z-auto md:translate-x-0 ${collapsed ? '-translate-x-full md:w-19' : 'translate-x-0'}`}
       >
-        <div className="flex h-[76px] items-center justify-between px-5">
+        <div className="flex h-19 items-center justify-between px-5">
           <button
             type="button"
             onClick={onNewChat}
@@ -70,7 +73,7 @@ export function Sidebar({ collapsed, onToggle, onNewChat }: SidebarProps) {
           </button>
         </div>
 
-        <div className="px-3">
+        <div className="px-4">
           <button
             type="button"
             onClick={onNewChat}
@@ -90,7 +93,9 @@ export function Sidebar({ collapsed, onToggle, onNewChat }: SidebarProps) {
               </div>
               {chatGroups.map((group) => (
                 <div key={group.label} className="mb-6">
-                  <p className="mb-1 px-3 text-xs font-medium text-muted-foreground/80">{group.label}</p>
+                  <p className="mb-1 px-3 text-xs font-medium text-muted-foreground/80">
+                    {group.label}
+                  </p>
                   <div className="space-y-0.5">
                     {group.chats.map((chat, index) => (
                       <button
@@ -100,7 +105,9 @@ export function Sidebar({ collapsed, onToggle, onNewChat }: SidebarProps) {
                       >
                         <MessageSquare size={15} className="shrink-0" />
                         <span className="truncate">{chat}</span>
-                        {index === 0 && group.label === 'Today' && <MoreHorizontal size={15} className="ml-auto shrink-0" />}
+                        {index === 0 && group.label === 'Today' && (
+                          <MoreHorizontal size={15} className="ml-auto shrink-0" />
+                        )}
                       </button>
                     ))}
                   </div>
@@ -110,20 +117,52 @@ export function Sidebar({ collapsed, onToggle, onNewChat }: SidebarProps) {
           )}
           {collapsed && (
             <div className="flex flex-col items-center gap-3 pt-1">
-              <button type="button" className="flex size-10 items-center justify-center rounded-lg bg-sidebar-accent text-foreground" aria-label="Recent chats"><Clock3 size={17} /></button>
-              <button type="button" className="flex size-10 items-center justify-center rounded-lg text-muted-foreground hover:bg-sidebar-accent" aria-label="Archive"><Archive size={17} /></button>
+              <button
+                type="button"
+                className="flex size-10 items-center justify-center rounded-lg bg-sidebar-accent text-foreground"
+                aria-label="Recent chats"
+              >
+                <Clock3 size={17} />
+              </button>
+              <button
+                type="button"
+                className="flex size-10 items-center justify-center rounded-lg text-muted-foreground hover:bg-sidebar-accent"
+                aria-label="Archive"
+              >
+                <Archive size={17} />
+              </button>
             </div>
           )}
         </nav>
 
         <div className="border-t border-border p-3">
-          <button type="button" className="flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left hover:bg-sidebar-accent">
-            <span className="flex size-9 items-center justify-center rounded-full bg-primary/15 text-sm font-semibold text-primary">AM</span>
-            {!collapsed && <span className="min-w-0 flex-1"><span className="block truncate text-sm font-medium">Alex Morgan</span><span className="block truncate text-xs text-muted-foreground">Free plan</span></span>}
+          <div className="mb-1 flex items-center justify-center gap-1">
+            <ThemeToggle compact={collapsed} className={collapsed ? undefined : 'flex-1'} />
+          </div>
+          <button
+            type="button"
+            className="flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left hover:bg-sidebar-accent"
+          >
+            <span className="flex size-9 items-center justify-center rounded-full bg-primary/15 text-sm font-semibold text-primary">
+              AM
+            </span>
+            {!collapsed && (
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-sm font-medium">Alex Morgan</span>
+                <span className="block truncate text-xs text-muted-foreground">Free plan</span>
+              </span>
+            )}
             {!collapsed && <Settings2 size={16} className="text-muted-foreground" />}
           </button>
         </div>
-        <button type="button" onClick={onToggle} className="absolute right-[-15px] top-5 z-10 flex size-8 items-center justify-center rounded-full border border-border bg-background text-muted-foreground shadow-sm md:hidden" aria-label="Close sidebar"><ChevronLeft size={16} /></button>
+        <button
+          type="button"
+          onClick={onToggle}
+          className="absolute -right-3.75 top-5 z-10 flex size-8 items-center justify-center rounded-full border border-border bg-background text-muted-foreground shadow-sm md:hidden"
+          aria-label="Close sidebar"
+        >
+          <ChevronLeft size={16} />
+        </button>
       </aside>
     </>
   );
