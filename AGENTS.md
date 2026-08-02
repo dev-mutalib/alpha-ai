@@ -46,7 +46,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 ### UI & UX Aesthetics (Chatbot Specific)
 
-- *First check if there's an `DESIGN.md` file, If there is then Follow that file for UI & UX Aesthetics. If not then Follow the rule's below*
+- _First check if there's an `DESIGN.md` file, If there is then Follow that file for UI & UX Aesthetics. If not then Follow the rule's below_
 - **Modern Dark & Light Mode**: Seamless dark/light theme support with sleek glassmorphism and modern color palettes.
 - **Rich Markdown & Syntax Highlighting**:
   - Render bot responses in rich Markdown (bold, lists, tables, code blocks).
