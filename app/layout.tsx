@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
+import { ThemeProvider } from '@/components/theme-provider';
 import { cn } from '@/lib/utils';
 
 // Using Inter as the humanist sans for body text as per DESIGN.md
@@ -19,14 +20,11 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={cn(
-        'antialiased',
-        inter.variable,
-        'font-sans'
-      )}
+      suppressHydrationWarning
+      className={cn('antialiased', inter.variable, 'font-sans')}
     >
-      <body className="h-dvh w-full overflow-hidden bg-background text-foreground flex flex-col">
-        {children}
+      <body className="flex h-dvh w-full flex-col overflow-hidden bg-background text-foreground">
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   );
