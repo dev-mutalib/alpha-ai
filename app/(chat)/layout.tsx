@@ -1,26 +1,17 @@
+'use client';
+
+import { useState } from 'react';
+import { Sidebar } from '@/components/chat/sidebar';
+import { Topbar } from '@/components/chat/topbar';
+
 export default function ChatLayout({ children }: { children: React.ReactNode }) {
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   return (
     <div className="flex h-full w-full">
-      {/* Sidebar - Collapsible Structure Placeholder */}
-      <aside className="w-64 border-r border-border bg-card flex flex-col shrink-0 md:flex">
-        <nav className="flex-1 overflow-y-auto p-4">
-          <div className="text-sm text-muted-foreground font-medium mb-4">Chat History</div>
-          {/* History items will go here */}
-        </nav>
-      </aside>
-
-      {/* Main Content Area */}
+      <Sidebar collapsed={sidebarCollapsed} onToggle={() => setSidebarCollapsed((value) => !value)} onNewChat={() => undefined} />
       <div className="flex flex-col flex-1 min-w-0">
-        {/* Topbar Placeholder */}
-        <header className="h-14 border-b border-border flex items-center justify-between px-4 shrink-0 bg-background">
-          <div className="font-semibold">Alpha AI</div>
-          <div className="text-sm text-muted-foreground">Sign In</div>
-        </header>
-
-        {/* Chat Container */}
-        <main className="flex-1 overflow-hidden min-h-0 bg-background relative flex flex-col">
-          {children}
-        </main>
+        <Topbar onSidebarToggle={() => setSidebarCollapsed((value) => !value)} />
+        <main className="relative flex min-h-0 flex-1 flex-col overflow-hidden bg-background">{children}</main>
       </div>
     </div>
   );
