@@ -1,5 +1,5 @@
 import type { NextConfig } from 'next';
-import './lib/env.mjs';
+import './lib/env.js';
 
 const nextConfig: NextConfig = {
   /* config options here */
