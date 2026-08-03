@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { streamText } from 'ai';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
-import { env } from '@/lib/env.js';
+import { env } from '@/lib/env';
 
 const google = createGoogleGenerativeAI({
   apiKey: env.GOOGLE_GENERATIVE_AI_API_KEY,
