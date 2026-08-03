@@ -78,9 +78,11 @@ export async function POST(req: Request) {
 
     // Stream response from Google's Gemini
     const result = streamText({
-      model: google('gemini-2.5-flash'),
+      model: google('gemini-3.5-flash'),
       messages,
       system: 'You are a helpful, concise assistant.', // Optional system prompt
+      maxOutputTokens: 100000,
+      maxRetries: 5,
     });
 
     return result.toUIMessageStreamResponse();
