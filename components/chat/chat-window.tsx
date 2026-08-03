@@ -1,7 +1,7 @@
 'use client';
 
 import { ArrowUpRight, FileText, Lightbulb, PenLine, Search } from 'lucide-react';
-import { ChatMessage, MessageList } from './message';
+import { MessageList, type ChatMessage } from './message';
 
 const suggestions = [
   { icon: PenLine, title: 'Write something', text: 'Draft, rewrite, or brainstorm an idea' },
@@ -17,7 +17,7 @@ export interface ChatWindowProps {
 
 export function ChatWindow({ messages, onSuggestion }: ChatWindowProps) {
   return (
-    <div className="min-h-0 flex-1 overflow-y-auto scrollbar-gutter-stable [scrollbar-color:#d6cec4_transparent] scrollbar-thin">
+    <div className="min-h-0 flex-1 overflow-y-auto [scrollbar-gutter:stable] [scrollbar-color:#d6cec4_transparent] [scrollbar-width:thin]">
       {messages.length ? (
         <MessageList messages={messages} />
       ) : (
@@ -33,6 +33,7 @@ export function ChatWindow({ messages, onSuggestion }: ChatWindowProps) {
               Start with a thought, a question, or a little bit of context.
             </p>
           </div>
+
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {suggestions.map(({ icon: Icon, title, text }) => (
               <button
