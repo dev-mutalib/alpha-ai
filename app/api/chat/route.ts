@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { streamText } from 'ai';
+import { streamText, convertToModelMessages, type UIMessage, type ModelMessage } from 'ai';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { env } from '@/lib/env';
 
@@ -7,90 +7,104 @@ const google = createGoogleGenerativeAI({
   apiKey: env.GOOGLE_GENERATIVE_AI_API_KEY,
 });
 
-// Define a schema for message parts (e.g., text, images)
-const partSchema = z.object({
-  type: z.enum(['text', 'image', 'file']), // Extend as needed
-  text: z.string().optional(),
-  // Add other part types (e.g., `imageUrl: z.string().optional()`) if needed
-});
-
-// Schema for individual chat messages
-const chatMessageSchema = z.object({
-  id: z.string().optional(),
-  role: z.enum(['user', 'assistant', 'system']),
-  content: z.string().optional(),
-  parts: z.array(partSchema).optional(),
-});
-
-// Schema for the request body
 const requestBodySchema = z.object({
-  messages: z.array(chatMessageSchema),
+  messages: z.array(z.custom<UIMessage>()),
 });
 
 export async function POST(req: Request) {
   try {
-    // Validate API key
+    /**
+     * Validate environment
+     */
     if (!env.GOOGLE_GENERATIVE_AI_API_KEY) {
-      return new Response(
-        JSON.stringify({
-          error: 'Server configuration error: Missing GOOGLE_GENERATIVE_AI_API_KEY',
-        }),
-        { status: 500, headers: { 'Content-Type': 'application/json' } },
+      return Response.json(
+        {
+          error: 'Server configuration error: GOOGLE_GENERATIVE_AI_API_KEY is missing',
+        },
+        {
+          status: 500,
+        },
       );
     }
 
-    // Parse and validate request body
+    /**
+     * Parse JSON body
+     */
     let body: unknown;
+
     try {
       body = await req.json();
     } catch {
-      return new Response(JSON.stringify({ error: 'Invalid JSON in request body' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      });
-    }
-
-    const parsed = requestBodySchema.safeParse(body);
-    if (!parsed.success) {
-      return new Response(
-        JSON.stringify({
-          error: 'Invalid request body',
-          details: parsed.error.flatten().fieldErrors,
-        }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } },
+      return Response.json(
+        {
+          error: 'Invalid JSON request body',
+        },
+        {
+          status: 400,
+        },
       );
     }
 
-    // Transform messages to extract content from `parts` or `content`
-    const messages = parsed.data.messages.map((message) => {
-      let contentStr = message.content || '';
-      if (!contentStr && message.parts) {
-        contentStr = message.parts
-          .filter((p) => p.type === 'text' && p.text)
-          .map((p) => p.text)
-          .join('');
-      }
-      return {
-        role: message.role,
-        content: contentStr,
-      };
-    });
+    /**
+     * Validate request
+     */
+    const parsed = requestBodySchema.safeParse(body);
 
-    // Stream response from Google's Gemini
+    if (!parsed.success) {
+      return Response.json(
+        {
+          error: 'Invalid request body',
+          details: parsed.error.flatten(),
+        },
+        {
+          status: 400,
+        },
+      );
+    }
+
+    /**
+     * Convert UI messages into model messages.
+     *
+     * This preserves compatibility with:
+     * - useChat()
+     * - reasoning parts
+     * - tool calls
+     * - future SDK updates
+     */
+    const modelMessages: ModelMessage[] = await convertToModelMessages(parsed.data.messages)
+
+    /**
+     * Generate streamed response
+     */
     const result = streamText({
-      model: google('gemini-3.5-flash'),
-      messages,
-      system: 'You are a helpful, concise assistant.', // Optional system prompt
-      maxOutputTokens: 100000,
+      model: google('gemini-2.5-flash'),
+      messages: modelMessages,
+
+      system: `
+You are Alpha AI.
+
+You are a helpful, knowledgeable and concise AI assistant.
+
+Always provide accurate, clear and well structured answers.
+`.trim(),
+
       maxRetries: 5,
     });
 
+    /**
+     * Return AI SDK UI stream
+     */
     return result.toUIMessageStreamResponse();
   } catch (error) {
     console.error('Chat route error:', error);
-    return new Response(JSON.stringify({ error: 'Internal server error' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    });
+
+    return Response.json(
+      {
+        error: 'Internal server error',
+      },
+      {
+        status: 500,
+      },
+    );
   }
 }
