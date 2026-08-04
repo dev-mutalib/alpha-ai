@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { streamText, convertToModelMessages, type UIMessage, type ModelMessage } from 'ai';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
-import { groq } from '@/lib/ai/providers/groq';
+import { groqProvider } from '@/lib/ai/providers/groq';
 import { env } from '@/lib/env';
 
 const google = createGoogleGenerativeAI({
@@ -78,7 +78,7 @@ export async function POST(req: Request) {
      * Generate streamed response
      */
     const result = streamText({
-      model: groq('openai/gpt-oss-120b'),
+      model: groqProvider('openai/gpt-oss-120b'),
       messages: modelMessages,
 
       system: `
