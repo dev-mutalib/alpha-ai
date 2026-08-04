@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { streamText, convertToModelMessages, type UIMessage, type ModelMessage } from 'ai';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
+import { groq } from '@/lib/ai/providers/groq';
 import { env } from '@/lib/env';
 
 const google = createGoogleGenerativeAI({
@@ -71,13 +72,13 @@ export async function POST(req: Request) {
      * - tool calls
      * - future SDK updates
      */
-    const modelMessages: ModelMessage[] = await convertToModelMessages(parsed.data.messages)
+    const modelMessages: ModelMessage[] = await convertToModelMessages(parsed.data.messages);
 
     /**
      * Generate streamed response
      */
     const result = streamText({
-      model: google('gemini-2.5-flash'),
+      model: groq('openai/gpt-oss-120b'),
       messages: modelMessages,
 
       system: `
