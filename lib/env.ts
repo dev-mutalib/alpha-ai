@@ -5,6 +5,8 @@ const envSchema = z.object({
   GOOGLE_GENERATIVE_AI_API_KEY: z.string().min(1, 'GOOGLE_GENERATIVE_AI_API_KEY is required'),
   ANTHROPIC_API_KEY: z.string().optional(),
   GROQ_API_KEY: z.string().optional(),
+  NVIDIA_API_KEY: z.string().optional(),
+  NVIDIA_BASE_URL: z.string().optional(),
   DATABASE_URL: z.string().optional(),
   NEXTAUTH_SECRET: z.string().optional(),
 });
@@ -14,6 +16,8 @@ const processEnv = {
   GOOGLE_GENERATIVE_AI_API_KEY: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
   ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
   GROQ_API_KEY: process.env.GROQ_API_KEY,
+  NVIDIA_API_KEY: process.env.NVIDIA_API_KEY,
+  NVIDIA_BASE_URL: process.env.NVIDIA_BASE_URL,
   DATABASE_URL: process.env.DATABASE_URL,
   NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
 };
