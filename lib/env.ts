@@ -8,6 +8,7 @@ const envSchema = z.object({
   NVIDIA_API_KEY: z.string().optional(),
   NVIDIA_BASE_URL: z.string().optional(),
   DATABASE_URL: z.string().optional(),
+  DATABASE_AUTH_TOKEN: z.string().optional(),
   NEXTAUTH_SECRET: z.string().optional(),
 });
 
@@ -19,6 +20,7 @@ const processEnv = {
   NVIDIA_API_KEY: process.env.NVIDIA_API_KEY,
   NVIDIA_BASE_URL: process.env.NVIDIA_BASE_URL,
   DATABASE_URL: process.env.DATABASE_URL,
+  DATABASE_AUTH_TOKEN: process.env.DATABASE_AUTH_TOKEN,
   NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
 };
 
