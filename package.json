@@ -24,6 +24,7 @@
     "@opentelemetry/sdk-metrics": "^2.10.0",
     "@opentelemetry/sdk-node": "^0.221.0",
     "@opentelemetry/sdk-trace-node": "^2.10.0",
+    "@types/better-sqlite3": "^9.6.0",
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.38.1",
     "@vercel/analytics": "^2.0.1",
