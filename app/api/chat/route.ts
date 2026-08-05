@@ -1,12 +1,7 @@
 import { z } from 'zod';
 import { streamText, convertToModelMessages, type UIMessage, type ModelMessage } from 'ai';
-import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { groqProvider } from '@/lib/ai/providers/groq';
 import { env } from '@/lib/env';
-
-const google = createGoogleGenerativeAI({
-  apiKey: env.GOOGLE_GENERATIVE_AI_API_KEY,
-});
 
 const requestBodySchema = z.object({
   messages: z.array(z.custom<UIMessage>()),
