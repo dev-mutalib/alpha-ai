@@ -12,22 +12,29 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { useEffect, useState } from 'react';
+import { getUserChats } from '@/app/actions/chat';
+import Link from 'next/link';
+import { useParams, useRouter } from 'next/navigation';
+import { isToday, isYesterday, isThisWeek } from 'date-fns';
 
-type ChatGroup = {
-  label: string;
-  chats: string[];
+type ChatItem = { id: string; title: string; updatedAt: Date | null };
+type ChatGroup = { label: string; chats: ChatItem[] };
+
+const groupChats = (chats: ChatItem[]): ChatGroup[] => {
+  const groups: ChatGroup[] = [];
+  const today = chats.filter(c => c.updatedAt && isToday(new Date(c.updatedAt)));
+  const yesterday = chats.filter(c => c.updatedAt && isYesterday(new Date(c.updatedAt)));
+  const thisWeek = chats.filter(c => c.updatedAt && isThisWeek(new Date(c.updatedAt)) && !isToday(new Date(c.updatedAt)) && !isYesterday(new Date(c.updatedAt)));
+  const older = chats.filter(c => !c.updatedAt || (!isThisWeek(new Date(c.updatedAt)) && !isYesterday(new Date(c.updatedAt)) && !isToday(new Date(c.updatedAt))));
+  
+  if (today.length) groups.push({ label: 'Today', chats: today });
+  if (yesterday.length) groups.push({ label: 'Yesterday', chats: yesterday });
+  if (thisWeek.length) groups.push({ label: 'This Week', chats: thisWeek });
+  if (older.length) groups.push({ label: 'Older', chats: older });
+  
+  return groups;
 };
-
-const chatGroups: ChatGroup[] = [
-  {
-    label: 'Today',
-    chats: ['Product launch notes', 'Weekend trip ideas', 'Explain quantum computing'],
-  },
-  {
-    label: 'Yesterday',
-    chats: ['A better morning routine', 'Refactor my TypeScript utility'],
-  },
-];
 
 export interface SidebarProps {
   collapsed: boolean;
@@ -36,6 +43,19 @@ export interface SidebarProps {
 }
 
 export function Sidebar({ collapsed, onToggle, onNewChat }: SidebarProps) {
+  const [chats, setChats] = useState<ChatItem[]>([]);
+  const params = useParams();
+  const currentChatId = params?.id as string | undefined;
+  const router = useRouter();
+
+  useEffect(() => {
+    getUserChats().then(data => {
+      setChats(data.map(c => ({ id: c.id, title: c.title, updatedAt: c.updatedAt })));
+    }).catch(console.error);
+  }, [currentChatId]); // Refetch when chat id changes (i.e. a new chat is created)
+
+  const chatGroups = groupChats(chats);
+
   return (
     <>
       {!collapsed && (
@@ -76,7 +96,10 @@ export function Sidebar({ collapsed, onToggle, onNewChat }: SidebarProps) {
         <div className="px-4">
           <button
             type="button"
-            onClick={onNewChat}
+            onClick={() => {
+              onNewChat();
+              router.push('/');
+            }}
             className="flex h-10 w-full items-center gap-3 rounded-xl bg-foreground px-3 text-sm font-medium text-background transition-colors hover:bg-body-strong"
           >
             <Plus size={17} />
@@ -97,18 +120,18 @@ export function Sidebar({ collapsed, onToggle, onNewChat }: SidebarProps) {
                     {group.label}
                   </p>
                   <div className="space-y-0.5">
-                    {group.chats.map((chat, index) => (
-                      <button
-                        type="button"
-                        key={chat}
-                        className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-[13px] transition-colors hover:bg-sidebar-accent ${index === 0 && group.label === 'Today' ? 'bg-sidebar-accent text-foreground' : 'text-muted-foreground'}`}
+                    {group.chats.map((chat: ChatItem, index: number) => (
+                      <Link
+                        href={`/${chat.id}`}
+                        key={chat.id}
+                        className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-[13px] transition-colors hover:bg-sidebar-accent ${chat.id === currentChatId ? 'bg-sidebar-accent text-foreground' : 'text-muted-foreground'}`}
                       >
                         <MessageSquare size={15} className="shrink-0" />
-                        <span className="truncate">{chat}</span>
-                        {index === 0 && group.label === 'Today' && (
+                        <span className="truncate">{chat.title}</span>
+                        {chat.id === currentChatId && (
                           <MoreHorizontal size={15} className="ml-auto shrink-0" />
                         )}
-                      </button>
+                      </Link>
                     ))}
                   </div>
                 </div>
