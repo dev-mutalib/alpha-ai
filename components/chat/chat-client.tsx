@@ -29,7 +29,7 @@ export function ChatClient({ id, initialMessages }: ChatClientProps) {
 
   useEffect(() => {
     if (!id && messages.length > 0) {
-      window.history.replaceState({}, '', `/${chatId}`);
+      window.history.replaceState({}, '', `/chat/${chatId}`);
     }
   }, [id, messages.length, chatId]);
 

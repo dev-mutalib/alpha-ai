@@ -98,7 +98,7 @@ export function Sidebar({ collapsed, onToggle, onNewChat }: SidebarProps) {
             type="button"
             onClick={() => {
               onNewChat();
-              router.push('/');
+              router.push('/chat/new');
             }}
             className="flex h-10 w-full items-center gap-3 rounded-xl bg-foreground px-3 text-sm font-medium text-background transition-colors hover:bg-body-strong"
           >
@@ -122,7 +122,7 @@ export function Sidebar({ collapsed, onToggle, onNewChat }: SidebarProps) {
                   <div className="space-y-0.5">
                     {group.chats.map((chat: ChatItem, index: number) => (
                       <Link
-                        href={`/${chat.id}`}
+                        href={`/chat/${chat.id}`}
                         key={chat.id}
                         className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-[13px] transition-colors hover:bg-sidebar-accent ${chat.id === currentChatId ? 'bg-sidebar-accent text-foreground' : 'text-muted-foreground'}`}
                       >
