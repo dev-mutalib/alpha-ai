@@ -1,19 +1,18 @@
-import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
-import { sql } from 'drizzle-orm';
+import { pgTable, text, timestamp } from 'drizzle-orm/pg-core';
 import { nanoid } from 'nanoid';
 
-export const users = sqliteTable('users', {
+export const users = pgTable('users', {
   id: text('id')
     .primaryKey()
     .$defaultFn(() => nanoid()),
   name: text('name').notNull(),
   email: text('email').notNull().unique(),
-  createAt: integer('create_at', { mode: 'timestamp' })
+  createAt: timestamp('create_at')
     .notNull()
-    .default(sql`(strftime('%s', 'now'))`),
+    .defaultNow(),
 });
 
-export const chats = sqliteTable('chats', {
+export const chats = pgTable('chats', {
   id: text('id')
     .primaryKey()
     .$defaultFn(() => nanoid()),
@@ -21,15 +20,15 @@ export const chats = sqliteTable('chats', {
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
   title: text('title').notNull().default('New Conversation'),
-  createdAt: integer('created_at', { mode: 'timestamp' })
+  createdAt: timestamp('created_at')
     .notNull()
-    .default(sql`(strftime('%s', 'now'))`),
-  updatedAt: integer('updated_at', { mode: 'timestamp' })
+    .defaultNow(),
+  updatedAt: timestamp('updated_at')
     .notNull()
-    .default(sql`(strftime('%s', 'now'))`),
+    .defaultNow(),
 });
 
-export const messages = sqliteTable('messages', {
+export const messages = pgTable('messages', {
   id: text('id')
     .primaryKey()
     .$defaultFn(() => nanoid()),
@@ -38,16 +37,16 @@ export const messages = sqliteTable('messages', {
     .references(() => chats.id, { onDelete: 'cascade' }),
   role: text('role', { enum: ['user', 'assistant', 'system', 'data'] }).notNull(),
   content: text('content').notNull(),
-  createdAt: integer('created_at', { mode: 'timestamp' })
+  createdAt: timestamp('created_at')
     .notNull()
-    .default(sql`(strftime('%s', 'now'))`),
+    .defaultNow(),
   // Add this to track edits/regenerations:
-  updatedAt: integer('updated_at', { mode: 'timestamp' })
+  updatedAt: timestamp('updated_at')
     .notNull()
-    .default(sql`(strftime('%s', 'now'))`)
+    .defaultNow()
     .$onUpdate(() => new Date()), // Drizzle feature to auto-update the timestamp
 });
-export const memories = sqliteTable('memories', {
+export const memories = pgTable('memories', {
   id: text('id')
     .primaryKey()
     .$defaultFn(() => nanoid()),
@@ -56,7 +55,7 @@ export const memories = sqliteTable('memories', {
     .references(() => users.id, { onDelete: 'cascade' }),
   content: text('content').notNull(), // The extracted fact/memory (e.g., "User is a React developer")
   // Future-proofing: We can add an embedding column later if we integrate a vector search extension
-  createdAt: integer('created_at', { mode: 'timestamp' })
+  createdAt: timestamp('created_at')
     .notNull()
-    .default(sql`(strftime('%s', 'now'))`),
+    .defaultNow(),
 });

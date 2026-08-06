@@ -10,7 +10,7 @@ import { getCurrentUserId } from '@/lib/session';
 // Exporting maxDuration ensures long-form response streams finish smoothly.
 export const maxDuration = 30;
 
-// Compatible with Turso @libsql/client
+// Compatible with Postgres.js
 export const runtime = 'nodejs';
 
 /**
