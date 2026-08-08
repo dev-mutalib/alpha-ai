@@ -20,5 +20,5 @@ export default async function ChatPageId(props: { params: Promise<{ id: string }
     parts: [{ type: 'text', text: msg.content }],
   }));
 
-  return <ChatClient id={id} initialMessages={initialMessages} />;
+  return <ChatClient key={id} id={id} initialMessages={initialMessages} />;
 }

@@ -1,79 +1,234 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { ArrowUp, Mic, Paperclip } from 'lucide-react';
+import { ArrowUp, Mic, Paperclip, Square } from 'lucide-react';
 
 export interface ChatInputProps {
   value: string;
   onChange: (value: string) => void;
   onSubmit: () => void;
+  isLoading?: boolean;
+  onStop?: () => void;
 }
 
-export function ChatInput({ value, onChange, onSubmit }: ChatInputProps) {
+export function ChatInput({
+  value,
+  onChange,
+  onSubmit,
+  isLoading = false,
+  onStop,
+}: ChatInputProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
   useEffect(() => {
     const textarea = textareaRef.current;
+
     if (!textarea) return;
+
     textarea.style.height = 'auto';
-    textarea.style.height = `${Math.min(textarea.scrollHeight, 160)}px`;
+
+    const nextHeight = Math.min(textarea.scrollHeight, 160);
+
+    textarea.style.height = `${nextHeight}px`;
   }, [value]);
+
+  const handleSubmit = () => {
+    if (isLoading) {
+      onStop?.();
+      return;
+    }
+
+    if (!value.trim()) {
+      return;
+    }
+
+    onSubmit();
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key !== 'Enter' || event.shiftKey) {
+      return;
+    }
+
+    event.preventDefault();
+
+    if (isLoading) {
+      return;
+    }
+
+    if (!value.trim()) {
+      return;
+    }
+
+    onSubmit();
+  };
+
   return (
-    <section className="shrink-0 bg-linear-to-t from-background via-background to-transparent px-4 pb-5 pt-4 sm:px-7 sm:pb-2">
+    <section className="w-full px-3 pb-3 sm:px-4">
       <form
         onSubmit={(event) => {
           event.preventDefault();
-          if (value.trim()) onSubmit();
+          handleSubmit();
         }}
-        className="mx-auto max-w-3xl rounded-2xl border border-border bg-card p-2 shadow-[0_8px_30px_rgba(20,20,19,0.08)]"
+        className="
+          mx-auto
+          flex
+          max-w-3xl
+          flex-col
+          rounded-3xl
+          border
+          border-border/50
+          bg-card
+          px-3
+          py-2
+          shadow-sm
+        "
       >
+        {/* Message field */}
         <textarea
           ref={textareaRef}
           value={value}
           onChange={(event) => onChange(event.target.value)}
-          onKeyDown={(event) => {
-            if (event.key === 'Enter' && !event.shiftKey) {
-              event.preventDefault();
-              if (value.trim()) onSubmit();
-            }
-          }}
+          onKeyDown={handleKeyDown}
           rows={1}
           placeholder="Message Alpha AI..."
-          className="max-h-40 min-h-11 w-full resize-none bg-transparent px-3 py-2.5 text-sm leading-6 text-foreground outline-none placeholder:text-muted-foreground"
           aria-label="Message Alpha AI"
+          className="
+            chat-input-textarea
+            block
+            w-full
+            min-h-8
+            max-h-40
+            resize-none
+            overflow-y-auto
+            scrollbar-none
+            border-0
+            bg-transparent  
+            px-1
+            py-1
+            text-sm
+            leading-6
+            text-foreground
+            placeholder:text-muted-foreground
+
+            outline-none
+            ring-0
+            shadow-none
+
+            focus:border-0
+            focus:outline-none
+            focus:ring-0
+            focus:shadow-none
+
+            focus-visible:border-0
+            focus-visible:outline-none
+            focus-visible:ring-0
+            focus-visible:shadow-none
+          "
         />
-        <div className="flex items-center justify-between px-1 pt-1">
-          <div className="flex items-center gap-1">
+
+        {/* Bottom toolbar */}
+        <div className="mt-1 flex items-center justify-between">
+          {/* Left controls */}
+          <div className="flex items-center">
             <button
               type="button"
-              disabled
-              className="flex size-9 items-center justify-center rounded-lg text-muted-foreground/50"
-              aria-label="Attach a file"
+              aria-label="Attach file"
+              className="
+                flex
+                size-8
+                items-center
+                justify-center
+                rounded-full
+                text-muted-foreground
+                transition-colors
+                hover:bg-muted
+                hover:text-foreground
+                focus:outline-none
+                focus:ring-0
+              "
             >
-              <Paperclip size={17} />
+              <Paperclip size={18} strokeWidth={1.8} />
             </button>
+
             <button
               type="button"
-              disabled
-              className="flex size-9 items-center justify-center rounded-lg text-muted-foreground/50"
               aria-label="Use microphone"
+              className="
+                flex
+                size-8
+                items-center
+                justify-center
+                rounded-full
+                text-muted-foreground
+                transition-colors
+                hover:bg-muted
+                hover:text-foreground
+                focus:outline-none
+                focus:ring-0
+              "
             >
-              <Mic size={17} />
+              <Mic size={18} strokeWidth={1.8} />
             </button>
-            <span className="ml-2 hidden text-[11px] text-muted-foreground sm:none">
-              Shift + Enter for new line
-            </span>
           </div>
+
+          {/* Send / Stop */}
           <button
             type="submit"
-            disabled={!value.trim()}
-            className="flex size-9 items-center justify-center rounded-xl bg-primary text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:bg-primary-disabled disabled:text-muted-foreground"
-            aria-label="Send message"
+            disabled={!value.trim() && !isLoading}
+            aria-label={isLoading ? 'Stop generating' : 'Send message'}
+            className={`
+              flex
+              size-8
+              shrink-0
+              items-center
+              justify-center
+              rounded-full
+              transition-all
+              duration-150
+              focus:outline-none
+              focus:ring-0
+
+              ${
+                isLoading
+                  ? `
+                    bg-foreground
+                    text-background
+                    hover:bg-foreground/80
+                  `
+                  : `
+                    bg-foreground
+                    text-background
+                    hover:bg-foreground/80
+                    disabled:bg-muted
+                    disabled:text-muted-foreground
+                    disabled:hover:bg-muted
+                  `
+              }
+            `}
           >
-            <ArrowUp size={17} />
+            {isLoading ? (
+              <Square size={11} strokeWidth={0} fill="currentColor" />
+            ) : (
+              <ArrowUp size={17} strokeWidth={2.2} />
+            )}
           </button>
         </div>
       </form>
-      <p className="mx-auto mt-3 max-w-3xl text-center text-[10px] text-muted-foreground/70">
+
+      {/* Disclaimer */}
+      <p
+        className="
+          mx-auto
+          mt-2
+          max-w-3xl
+          px-2
+          text-center
+          text-[10px]
+          leading-4
+          text-muted-foreground/70
+        "
+      >
         Alpha AI can make mistakes. Check important information.
       </p>
     </section>
