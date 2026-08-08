@@ -8,7 +8,7 @@ import {
   MessageSquare,
   MoreHorizontal,
   Plus,
-  Settings2,
+  Settings,
   Sparkles,
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/theme-toggle';
@@ -175,7 +175,7 @@ export function Sidebar({ collapsed, onToggle, onNewChat }: SidebarProps) {
                 <span className="block truncate text-xs text-muted-foreground">Free plan</span>
               </span>
             )}
-            {!collapsed && <Settings2 size={16} className="text-muted-foreground" />}
+            {!collapsed && <Settings size={16} className="text-muted-foreground" />}
           </button>
         </div>
         <button
