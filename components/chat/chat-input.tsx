@@ -75,7 +75,7 @@ export function ChatInput({
           flex
           max-w-3xl
           flex-col
-          rounded-[24px]
+          rounded-3xl
           border
           border-border/50
           bg-card
@@ -97,7 +97,7 @@ export function ChatInput({
             chat-input-textarea
             block
             w-full
-            min-h-[32px]
+            min-h-8
             max-h-40
             resize-none
             overflow-y-auto
