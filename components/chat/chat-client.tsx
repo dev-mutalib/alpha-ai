@@ -27,13 +27,41 @@ export function ChatClient({ id, initialMessages }: ChatClientProps) {
     },
   });
 
+  /*
+   * If this is a brand-new chat, update the browser URL
+   * once the first message has been added.
+   *
+   * We intentionally use replaceState here so that the page
+   * does not remount while the first response is streaming.
+   */
   useEffect(() => {
     if (!id && messages.length > 0) {
       window.history.replaceState({}, '', `/chat/${chatId}`);
     }
   }, [id, messages.length, chatId]);
 
-  /**
+  /*
+   * Notify the sidebar whenever the chat has been updated.
+   *
+   * This is important because window.history.replaceState()
+   * does not trigger Next.js router state changes.
+   *
+   * The sidebar listens for this event and refetches the
+   * user's chats without requiring a page refresh.
+   */
+  useEffect(() => {
+    if (status === 'ready' && messages.length > 0) {
+      window.dispatchEvent(
+        new CustomEvent('alpha:chat-updated', {
+          detail: {
+            chatId,
+          },
+        }),
+      );
+    }
+  }, [status, messages.length, chatId]);
+
+  /*
    * AI SDK states:
    *
    * submitted -> request has been sent, waiting for stream
@@ -70,11 +98,11 @@ export function ChatClient({ id, initialMessages }: ChatClientProps) {
   };
 
   return (
-    <div className="flex h-full min-h-0 flex-col">
+    <div className="flex min-h-0 flex-1 flex-col">
       {/* Error */}
       {error ? (
-        <div className="mx-auto w-full max-w-3xl px-5 pb-2 sm:px-8">
-          <div className="rounded-lg border border-destructive/20 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+        <div className="mx-auto w-full max-w-3xl px-5 pt-4 sm:px-8">
+          <div className="rounded-lg border border-destructive/20 bg-destructive/10 px-4 py-3 text-sm text-destructive">
             {error.message || 'Something went wrong while connecting to the AI model.'}
           </div>
         </div>
