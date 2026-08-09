@@ -46,16 +46,34 @@ export const messages = pgTable('messages', {
     .defaultNow()
     .$onUpdate(() => new Date()), // Drizzle feature to auto-update the timestamp
 });
+
 export const memories = pgTable('memories', {
   id: text('id')
     .primaryKey()
     .$defaultFn(() => nanoid()),
+
   userId: text('user_id')
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
-  content: text('content').notNull(), // The extracted fact/memory (e.g., "User is a React developer")
-  // Future-proofing: We can add an embedding column later if we integrate a vector search extension
-  createdAt: timestamp('created_at')
+
+  content: text('content').notNull(),
+
+  category: text('category', {
+    enum: ['preference', 'fact', 'instruction', 'profile'],
+  })
     .notNull()
-    .defaultNow(),
+    .default('fact'),
+
+  source: text('source', {
+    enum: ['explicit', 'inferred'],
+  })
+    .notNull()
+    .default('explicit'),
+
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+
+  updatedAt: timestamp('updated_at')
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => new Date()),
 });
