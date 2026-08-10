@@ -234,7 +234,10 @@ export function Sidebar({ collapsed, onToggle, onNewChat }: SidebarProps) {
         </div>
 
         {/* Chat History */}
-        <nav className="mt-7 flex-1 overflow-y-auto px-3 pb-4" aria-label="Chat history">
+        <nav
+          className="chat-sidebar-scrollbar mt-7 flex-1 overflow-y-auto px-3 pb-4"
+          aria-label="Chat history"
+        >
           {!collapsed && (
             <>
               <div className="mb-3 flex items-center gap-2 px-3 text-[11px] font-semibold uppercase tracking-[0.15em] text-muted-foreground">
