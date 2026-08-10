@@ -261,25 +261,17 @@ export function Sidebar({ collapsed, onToggle, onNewChat }: SidebarProps) {
                           href={`/chat/${chat.id}`}
                           key={chat.id}
                           aria-current={isActive ? 'page' : undefined}
-                          className={`group/chat relative flex w-full items-center gap-3 overflow-hidden rounded-lg px-3 py-2.5 pl-4 text-left text-[13px] transition-all duration-150 ${
+                          className={`group/chat relative flex w-full items-center gap-3 overflow-hidden rounded-lg px-3 py-2.5 text-left text-[13px] transition-all duration-150 ${
                             isActive
-                              ? 'bg-primary/10 text-primary'
+                              ? 'bg-sidebar-accent text-sidebar-accent-foreground'
                               : 'text-muted-foreground hover:bg-sidebar-accent hover:text-foreground'
                           }`}
                         >
-                          {/* Active chat indicator */}
-                          <span
-                            className={`absolute left-0 top-1/2 h-5 w-0.75 -translate-y-1/2 rounded-r-full bg-primary transition-all duration-150 ${
-                              isActive ? 'opacity-100' : 'opacity-0'
-                            }`}
-                            aria-hidden="true"
-                          />
-
                           <MessageSquare
                             size={15}
                             className={`shrink-0 transition-colors ${
                               isActive
-                                ? 'text-primary'
+                                ? 'text-sidebar-accent-foreground'
                                 : 'text-muted-foreground group-hover/chat:text-foreground'
                             }`}
                           />
@@ -293,7 +285,7 @@ export function Sidebar({ collapsed, onToggle, onNewChat }: SidebarProps) {
                           {isActive && (
                             <MoreHorizontal
                               size={15}
-                              className="ml-auto shrink-0 text-primary/70"
+                              className="ml-auto shrink-0 text-sidebar-accent-foreground/70 hover:text-sidebar-accent-foreground transition-colors"
                             />
                           )}
                         </Link>
